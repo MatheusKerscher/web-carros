@@ -1,11 +1,14 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+
+import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import Logo from "../../components/Logo";
-import { zodResolver } from "@hookform/resolvers/zod";
+import authService from "../../services/authService";
 
 const schema = z.object({
   fullName: z
@@ -27,6 +30,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const Register = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -36,8 +42,23 @@ const Register = () => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    authService.signOut()
+  }, [])
+
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    setLoading(true);
+
+    authService
+      .registerUser(data.fullName, data.email, data.password)
+        .then((success) => {
+          if (success) {
+            navigate("/dashboard", { replace: true });
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
   };
 
   return (
@@ -76,6 +97,7 @@ const Register = () => {
               isValid ? "cursor-pointer" : "opacity-70 cursor-not-allowed"
             }`}
             disabled={!isValid}
+            loading={loading}
           >
             Cadastrar
           </Button>

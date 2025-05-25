@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -6,6 +6,8 @@ import { z } from "zod";
 import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import Logo from "../../components/Logo";
+import { useEffect, useState } from "react";
+import authService from "../../services/authService";
 
 const schema = z.object({
   email: z
@@ -18,6 +20,9 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const Login = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -27,8 +32,23 @@ const Login = () => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    authService.signOut();
+  }, []);
+
   const onSubmit = (data: FormData) => {
-    console.log(data);
+    setLoading(true);
+
+    authService
+      .signIn(data.email, data.password)
+      .then((success) => {
+        if (success) {
+          navigate("/dashboard", { replace: true });
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -59,6 +79,7 @@ const Login = () => {
               isValid ? "cursor-pointer" : "opacity-70 cursor-not-allowed"
             }`}
             disabled={!isValid}
+            loading={loading}
           >
             Acessar
           </Button>

@@ -1,7 +1,8 @@
 import { FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import Logo from "../Logo";
+import authService from "../../services/authService";
 
 const iconProps = {
   size: 22,
@@ -9,12 +10,18 @@ const iconProps = {
 };
 
 const Header = () => {
-  const isLogged = false
-  
+  const navigate = useNavigate();
+  const isLogged = true;
+
+  const handleSignOut = () => {
+    authService.signOut();
+    navigate("/login");
+  };
+
   return (
     <header className="py-2 bg-white drop-shadow mb-4">
       <div className="w-full max-w-7xl mx-auto px-3 flex flex-wrap items-center justify-between">
-        <Logo  width={120}/>
+        <Logo width={120} />
 
         {isLogged ? (
           <div className="flex justify-center gap-3 items-center">
@@ -22,7 +29,11 @@ const Header = () => {
               <FiUser {...iconProps} />
             </Link>
 
-            <button>
+            <button
+              type="button"
+              className="cursor-pointer"
+              onClick={handleSignOut}
+            >
               <FiLogOut {...iconProps} color="#E11138" />
             </button>
           </div>

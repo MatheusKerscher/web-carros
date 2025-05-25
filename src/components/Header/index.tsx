@@ -1,6 +1,7 @@
 import { FiLogIn, FiLogOut, FiUser } from "react-icons/fi";
-import Logo from "../../assets/logo.svg?react";
 import { Link } from "react-router-dom";
+
+import Logo from "../Logo";
 
 const iconProps = {
   size: 22,
@@ -8,14 +9,14 @@ const iconProps = {
 };
 
 const Header = () => {
+  const isLogged = false
+  
   return (
-    <header className="px-3 py-2 bg-white drop-shadow mb-4">
-      <div className="w-full max-w-7xl mx-auto flex flex-wrap items-center justify-between">
-        <Link to="/">
-          <Logo width={120} />
-        </Link>
+    <header className="py-2 bg-white drop-shadow mb-4">
+      <div className="w-full max-w-7xl mx-auto px-3 flex flex-wrap items-center justify-between">
+        <Logo  width={120}/>
 
-        {true ? (
+        {isLogged ? (
           <div className="flex justify-center gap-3 items-center">
             <Link to="/dashboard">
               <FiUser {...iconProps} />

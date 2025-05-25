@@ -1,16 +1,17 @@
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+
 import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import Logo from "../../components/Logo";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
 
 const schema = z.object({
   email: z
     .string()
     .email("Insira um e-mail válido")
-    .nonempty("O campo e-mail é obrigatório"),
+    .nonempty("O e-mail é obrigatório"),
   password: z.string().nonempty("A senha é obrigatória"),
 });
 
@@ -20,15 +21,15 @@ const Login = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange",
   });
 
   const onSubmit = (data: FormData) => {
-    console.log(data)
-  }
+    console.log(data);
+  };
 
   return (
     <section className="h-screen flex flex-col justify-center items-center px-4">
@@ -52,7 +53,13 @@ const Login = () => {
             register={register}
           />
 
-          <Button type="submit" classStyle="w-full bg-black">
+          <Button
+            type="submit"
+            classStyle={`w-full bg-black ${
+              isValid ? "cursor-pointer" : "opacity-70 cursor-not-allowed"
+            }`}
+            disabled={!isValid}
+          >
             Acessar
           </Button>
         </form>

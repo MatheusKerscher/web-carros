@@ -5,7 +5,10 @@ const Layout = () => {
   return (
     <>
       <Header />
-      <Outlet />
+
+      <main className="w-full max-w-7xl mx-auto">
+        <Outlet />
+      </main>
     </>
   );
 };

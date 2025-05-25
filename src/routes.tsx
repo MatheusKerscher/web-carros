@@ -20,8 +20,8 @@ function AppRoutes() {
 
           <Route path="/dashboard" element={<DashboardLayout />}>
             <Route index element={<Dashboard />} />
-            <Route path="/new-car" element={<CarForm />} />
-            <Route path="/edit-car/:carId" element={<CarForm />} />
+            <Route path="new-car" element={<CarForm />} />
+            <Route path="edit-car/:carId" element={<CarForm />} />
           </Route>
         </Route>
 

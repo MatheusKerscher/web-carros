@@ -38,7 +38,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     });
 
-    return unsub();
+    return () => {
+      unsub();
+    };
   }, []);
 
   const handleInfoUser = ({ uuid, name, email }: UserProps) => {

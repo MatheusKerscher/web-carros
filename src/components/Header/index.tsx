@@ -17,8 +17,6 @@ const Header = () => {
   const { signed } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  console.log(signed)
-
   const handleSignOut = () => {
     authService.signOut();
     toast.info("Até breve :)");

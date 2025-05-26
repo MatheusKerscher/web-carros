@@ -41,8 +41,8 @@ const Login = () => {
 
     authService
       .signIn(data.email, data.password)
-      .then((success) => {
-        if (success) {
+      .then((response) => {
+        if (response?.user) {
           navigate("/dashboard", { replace: true });
         }
       })

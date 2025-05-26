@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   signOut as firebaseAuthSignOut,
   updateProfile,
+  type UserCredential,
 } from "firebase/auth";
 import { auth } from "../common/config/firebase";
 import { toast } from "react-toastify";
@@ -12,10 +13,8 @@ const authService = {
     fullName: string,
     email: string,
     password: string
-  ): Promise<boolean> => {
-    let successRegister = false;
-
-    successRegister = await createUserWithEmailAndPassword(
+  ): Promise<UserCredential | null> => {
+    return await createUserWithEmailAndPassword(
       auth,
       email,
       password
@@ -27,36 +26,30 @@ const authService = {
 
         toast.success("Cadastro realizado!! Seja bem-vindo(a)");
 
-        return true;
+        return response;
       })
       .catch(() => {
         toast.error(
           "Erro ao realizar cadastro. Verifique os dados informados e tente novamente"
         );
 
-        return false;
+        return null;
       });
-
-    return successRegister;
   },
-  signIn: async (email: string, password: string): Promise<boolean> => {
-    let successSignIn = false;
-
-    successSignIn = await signInWithEmailAndPassword(auth, email, password)
+  signIn: async (email: string, password: string): Promise<UserCredential | null> => {
+    return await signInWithEmailAndPassword(auth, email, password)
       .then((response) => {
         toast.success(`Olá, ${response.user.displayName}!`);
 
-        return true;
+        return response;
       })
       .catch(() => {
         toast.error(
           "Erro ao acessar. Verifique os dados informados e tente novamente"
         );
 
-        return false;
+        return null;
       });
-
-    return successSignIn;
   },
   signOut: async () => {
     await firebaseAuthSignOut(auth)

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
@@ -9,6 +9,7 @@ import Button from "../../components/Button";
 import InputField from "../../components/InputField";
 import Logo from "../../components/Logo";
 import authService from "../../services/authService";
+import { AuthContext } from "../../context/AuthContext";
 
 const schema = z.object({
   fullName: z
@@ -30,6 +31,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>;
 
 const Register = () => {
+  const { handleInfoUser } = useContext(AuthContext);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -43,22 +45,30 @@ const Register = () => {
   });
 
   useEffect(() => {
-    authService.signOut()
-  }, [])
+    authService.signOut();
+  }, []);
 
   const onSubmit = (data: FormData) => {
     setLoading(true);
 
     authService
       .registerUser(data.fullName, data.email, data.password)
-        .then((success) => {
-          if (success) {
-            navigate("/dashboard", { replace: true });
-          }
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      .then((response) => {
+        const user = response?.user;
+
+        if (user) {
+          handleInfoUser({
+            uuid: user.uid,
+            name: user.displayName,
+            email: user.email,
+          });
+
+          navigate("/dashboard", { replace: true });
+        }
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (

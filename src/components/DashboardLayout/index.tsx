@@ -1,3 +1,4 @@
+import { Outlet } from "react-router-dom";
 import Header from "./Header";
 
 const DashboardLayout = () => {
@@ -7,7 +8,9 @@ const DashboardLayout = () => {
         <Header />
       </section>
 
-      <main className="w-full max-w-7xl mx-auto px-3"></main>
+      <main className="w-full max-w-7xl mx-auto px-3 pb-4">
+        <Outlet />
+      </main>
     </>
   );
 };

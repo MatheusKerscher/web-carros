@@ -24,7 +24,7 @@ const InputField = ({
 }: InputFieldProps) => {
   return (
     <div className={containerClassStyle}>
-      {label && <label htmlFor={name}>{label}</label>}
+      {label && <label className="font-bold block mb-1" htmlFor={name}>{label}</label>}
 
       <input
         className="py-2 px-3 placeholder:text-input-border outline-none w-full border-1 border-input-border rounded-lg"

@@ -14,46 +14,44 @@ const authService = {
     email: string,
     password: string
   ): Promise<UserCredential | null> => {
-    return await createUserWithEmailAndPassword(
-      auth,
-      email,
-      password
-    )
-      .then(async (response) => {
-        await updateProfile(response.user, {
-          displayName: fullName,
-        });
-
-        toast.success("Cadastro realizado!! Seja bem-vindo(a)");
-
-        return response;
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao realizar cadastro. Verifique os dados informados e tente novamente"
-        );
-
-        return null;
+    try {
+      const response = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await updateProfile(response.user, {
+        displayName: fullName,
       });
+      toast.success("Cadastro realizado!! Seja bem-vindo(a)");
+      return response;
+    } catch {
+      toast.error(
+        "Erro ao realizar cadastro. Verifique os dados informados e tente novamente"
+      );
+
+      return null;
+    }
   },
-  signIn: async (email: string, password: string): Promise<UserCredential | null> => {
-    return await signInWithEmailAndPassword(auth, email, password)
-      .then((response) => {
-        toast.success(`Olá, ${response.user.displayName}!`);
+  signIn: async (
+    email: string,
+    password: string
+  ): Promise<UserCredential | null> => {
+    try {
+      const response = await signInWithEmailAndPassword(auth, email, password);
+      toast.success(`Olá, ${response.user.displayName}!`);
+      return response;
+    } catch {
+      toast.error(
+        "Erro ao acessar. Verifique os dados informados e tente novamente"
+      );
 
-        return response;
-      })
-      .catch(() => {
-        toast.error(
-          "Erro ao acessar. Verifique os dados informados e tente novamente"
-        );
-
-        return null;
-      });
+      return null;
+    }
   },
   signOut: async () => {
-    await firebaseAuthSignOut(auth)
-  }
+    await firebaseAuthSignOut(auth);
+  },
 };
 
 export default authService;

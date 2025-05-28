@@ -5,7 +5,7 @@ type InputFieldProps = {
   label?: string;
   name: string;
   placeholder?: string;
-  type?: "number" | "text" | "email" | "password";
+  type?: "number" | "text" | "email" | "password" | "tell";
   containerClassStyle?: string;
   register: UseFormRegister<any>;
   error?: string;

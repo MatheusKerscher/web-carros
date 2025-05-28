@@ -2,6 +2,7 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "../common/config/firebase";
+import type { UserProps } from "../types/User";
 
 type AuthContextProps = {
   signed: boolean;
@@ -11,12 +12,6 @@ type AuthContextProps = {
 
 type AuthProviderProps = {
   children: ReactNode;
-};
-
-type UserProps = {
-  uuid: string;
-  name: string | null;
-  email: string | null;
 };
 
 export const AuthContext = createContext({} as AuthContextProps);

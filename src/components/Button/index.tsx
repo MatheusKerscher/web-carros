@@ -7,7 +7,7 @@ type ButtonProps = {
   type: "button" | "submit";
   classStyle: string;
   children: ReactNode;
-  disabled: boolean;
+  disabled?: boolean;
   loading?: boolean;
 };
 

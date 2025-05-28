@@ -40,25 +40,23 @@ const schema = z.object({
   description: z.string().nonempty("A descrição do é obrigatória"),
 });
 
-type FormData = z.infer<typeof schema>;
+export type FormData = z.infer<typeof schema>;
 
 const CarForm = () => {
   const { user } = useContext(AuthContext);
   const inputImageRef = useRef<HTMLInputElement>(null);
   const [carImages, setCarImages] = useState<UploadCarImageData[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors, isValid },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onChange",
   });
-
-  const saveCar = (data: FormData) => {
-    console.log(data);
-  };
 
   const handleFile = (ev: ChangeEvent<HTMLInputElement>) => {
     if (ev.target.files && ev.target.files[0]) {
@@ -92,6 +90,30 @@ const CarForm = () => {
         );
       }
     });
+  };
+
+  const saveCar = (data: FormData) => {
+    if (!user?.uuid) {
+      return;
+    }
+
+    if (carImages.length === 0) {
+      toast.warning("Você deve selecionar pelo menos uma foto do carro");
+      return;
+    }
+
+    setLoading(true);
+
+    carsService
+      .createCar(user, data, carImages)
+      .then(() => {
+        reset();
+        setCarImages([]);
+        toast.success("Carro cadastrado com sucesso");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -235,6 +257,7 @@ const CarForm = () => {
               isValid ? "cursor-pointer" : "opacity-70 cursor-not-allowed"
             }`}
             disabled={!isValid}
+            loading={loading}
           >
             Cadastrar
           </Button>

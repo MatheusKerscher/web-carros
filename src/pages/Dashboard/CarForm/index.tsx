@@ -71,7 +71,7 @@ const CarForm = () => {
   };
 
   const handleUploadImage = (image: File) => {
-    if (!user?.uuid) {
+    if (!user?.uid) {
       return;
     }
 
@@ -93,7 +93,7 @@ const CarForm = () => {
   };
 
   const saveCar = (data: FormData) => {
-    if (!user?.uuid) {
+    if (!user?.uid) {
       return;
     }
 

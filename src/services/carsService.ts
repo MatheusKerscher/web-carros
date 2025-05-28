@@ -11,7 +11,14 @@ import { db, storage } from "../common/config/firebase";
 import type { UploadCarImageData } from "../pages/Dashboard/CarForm/types";
 import { toast } from "react-toastify";
 import type { FormData } from "../pages/Dashboard/CarForm";
-import { addDoc, collection, getDocs, orderBy, query } from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import type { CarProps } from "../types/car";
 
 const carsService = {
@@ -19,7 +26,7 @@ const carsService = {
     image: File,
     user: UserProps
   ): Promise<UploadCarImageData | null> => {
-    const currentUid = user.uuid;
+    const currentUid = user.uid;
     const imageUid = uuid();
 
     const uploadRef = ref(storage, `images/${currentUid}/${imageUid}`);
@@ -76,7 +83,7 @@ const carsService = {
         whatsapp: carData.whatsapp,
         description: carData.description,
         created: new Date(),
-        uid: user.uuid,
+        uid: user.uid,
         owner: user.name,
         images: carImages,
       });
@@ -89,13 +96,12 @@ const carsService = {
   },
   listAllCars: async (): Promise<CarProps[]> => {
     try {
-
-      const carsRef = collection(db, "cars")
-      const queryRef = query(carsRef, orderBy("created", "desc"))
-      const snapshot = await getDocs(queryRef)
+      const carsRef = collection(db, "cars");
+      const queryRef = query(carsRef, orderBy("created", "desc"));
+      const snapshot = await getDocs(queryRef);
       const carList: CarProps[] = snapshot.docs.map((doc) => {
-        const docData = doc.data()
-        
+        const docData = doc.data();
+
         return {
           id: doc.id,
           uid: docData.uid,
@@ -104,16 +110,40 @@ const carsService = {
           city: docData.city,
           mileage: docData.mileage,
           price: docData.price,
-          images: docData.images          
-        }
-      })
+          images: docData.images,
+        };
+      });
 
-      return carList
+      return carList;
     } catch {
-      return []
+      return [];
     }
   },
-  listUserCars: () => {}
+  listUserCars: async (user: UserProps): Promise<CarProps[]> => {
+    try {
+      const carsRef = collection(db, "cars");
+      const queryRef = query(carsRef, where("uid", "==",user.uid));
+      const snapshot = await getDocs(queryRef);
+      const carList: CarProps[] = snapshot.docs.map((doc) => {
+        const docData = doc.data();
+
+        return {
+          id: doc.id,
+          uid: docData.uid,
+          carName: docData.carName,
+          year: docData.year,
+          city: docData.city,
+          mileage: docData.mileage,
+          price: docData.price,
+          images: docData.images,
+        };
+      });
+
+      return carList;
+    } catch {
+      return [];
+    }
+  },
 };
 
 export default carsService;

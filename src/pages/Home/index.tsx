@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 
+import { Link } from "react-router-dom";
 import { LoadingOutlined } from "@ant-design/icons";
 import { Spin } from "antd";
 
@@ -66,12 +67,17 @@ const Home = () => {
 
       <section className="grid gap-8 justify-items-center sm:justify-items-stretch grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {carList.map((car) => (
-          <CarCard
-            key={car.id}
-            {...car}
-            imageLoaded={carImageList.includes(car.id)}
-            onLoad={() => handleOnLoad(car.id)}
-          />
+          <Link
+            to={`/car-details/${car.id}`}
+            className="flex flex-col w-full group"
+          >
+            <CarCard
+              key={car.id}
+              {...car}
+              imageLoaded={carImageList.includes(car.id)}
+              onLoad={() => handleOnLoad(car.id)}
+            />
+          </Link>
         ))}
       </section>
     </div>

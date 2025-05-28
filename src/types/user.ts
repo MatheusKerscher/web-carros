@@ -1,5 +1,5 @@
 export interface UserProps {
-  uuid: string;
+  uid: string;
   name: string | null;
   email: string | null;
 }

@@ -58,7 +58,7 @@ const Register = () => {
 
         if (user) {
           handleInfoUser({
-            uuid: user.uid,
+            uid: user.uid,
             name: user.displayName,
             email: user.email,
           });

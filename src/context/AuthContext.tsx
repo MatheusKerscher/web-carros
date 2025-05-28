@@ -7,7 +7,7 @@ import type { UserProps } from "../types/User";
 type AuthContextProps = {
   signed: boolean;
   user: UserProps | null;
-  handleInfoUser: ({ uuid, name, email }: UserProps) => void;
+  handleInfoUser: ({ uid, name, email }: UserProps) => void;
 };
 
 type AuthProviderProps = {
@@ -24,7 +24,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     const unsub = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser({
-          uuid: user.uid,
+          uid: user.uid,
           name: user.displayName,
           email: user.email,
         });
@@ -38,9 +38,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
     };
   }, []);
 
-  const handleInfoUser = ({ uuid, name, email }: UserProps) => {
+  const handleInfoUser = ({ uid: uuid, name, email }: UserProps) => {
     setUser({
-      uuid,
+      uid: uuid,
       name,
       email,
     });

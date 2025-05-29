@@ -14,6 +14,8 @@ import type { FormData } from "../pages/Dashboard/CarForm";
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -144,6 +146,24 @@ const carsService = {
       return [];
     }
   },
+  deleteCar: async (userId: string, car: CarProps): Promise<boolean> => {
+    try {
+      if(userId === car.uid) {
+        car.images.forEach(async (image) => {
+          const imageRef = ref(storage, `images/${image.uid}/${image.name}`)
+          await deleteObject(imageRef)
+        })
+
+        const docRef = doc(db, "cars", car.id)
+        await deleteDoc(docRef)
+        return true
+      }
+
+      return false
+    } catch {
+      return false
+    }
+  }
 };
 
 export default carsService;

@@ -7,6 +7,7 @@ import CarCard from "../../components/CarCard";
 import type { CarProps } from "../../types/car";
 import carsService from "../../services/carsService";
 import { AuthContext } from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 const Dashboard = () => {
   const { user } = useContext(AuthContext);
@@ -35,6 +36,21 @@ const Dashboard = () => {
     setImageCarList((list) => [...list, carId]);
   };
 
+  const handleDeleteCar = (car: CarProps) => {
+    if (!user?.uid) {
+      return;
+    }
+
+    carsService.deleteCar(user.uid, car).then((deleted) => {
+      if (deleted) {
+        setCarList(carList.filter((c) => c.id !== car.id));
+        toast.success("Carro removido com sucesso");
+      } else {
+        toast.error("Erro ao deletar o carro");
+      }
+    });
+  };
+
   return (
     <div className="pb-8">
       {loading && (
@@ -55,8 +71,9 @@ const Dashboard = () => {
             key={car.id}
             {...car}
             imageLoaded={carImageList.includes(car.id)}
-            onLoad={() => handleOnLoad(car.id)}
             buttons
+            onLoad={() => handleOnLoad(car.id)}
+            onDelete={() => handleDeleteCar(car)}
           />
         ))}
       </section>

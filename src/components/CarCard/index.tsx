@@ -18,6 +18,7 @@ type CarCardProps = CarProps & {
   buttons?: boolean;
   imageLoaded: boolean;
   onLoad: () => void;
+  onDelete?: () => void;
 };
 
 const CarCard = ({
@@ -31,6 +32,7 @@ const CarCard = ({
   imageLoaded,
   buttons = false,
   onLoad,
+  onDelete,
 }: CarCardProps) => {
   return (
     <div className="relative bg-white rounded-lg max-w-[400px]">
@@ -39,6 +41,7 @@ const CarCard = ({
           <button
             type="button"
             className="absolute top-1 right-1 bg-white p-2 rounded-full flex items-center justify-center cursor-pointer"
+            onClick={onDelete}
           >
             <FiTrash size={20} color="#121212" />
           </button>

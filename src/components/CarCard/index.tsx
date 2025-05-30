@@ -1,13 +1,15 @@
+import { Link } from "react-router-dom";
 import {
   IoCalendarClearOutline,
   IoLocationOutline,
   IoSpeedometerOutline,
 } from "react-icons/io5";
+import { TfiPencil } from "react-icons/tfi";
+import { FiTrash } from "react-icons/fi";
 
 import type { CarProps } from "../../types/car";
-import { FiTrash } from "react-icons/fi";
-import { TfiPencil } from "react-icons/tfi";
-import { Link } from "react-router-dom";
+import brazilianCurrencyFormatter from "../../utils/brazilianCurrencyFormatter";
+import brazilianDecimalFormatter from "../../utils/brazilianDecimalFormatter";
 
 const iconProps = {
   size: 18,
@@ -81,15 +83,12 @@ const CarCard = ({
 
           <span className="flex gap-1">
             <IoSpeedometerOutline {...iconProps} />
-            {Number(mileage).toLocaleString("pt-BR", { style: "decimal" })} km
+            {brazilianDecimalFormatter(Number(mileage))} km
           </span>
         </div>
 
         <h4 className="font-bold text-lg sm:text-xl mt-6">
-          {price.toLocaleString("pt-BR", {
-            style: "currency",
-            currency: "BRL",
-          })}
+          {brazilianCurrencyFormatter(price)}
         </h4>
       </div>
 

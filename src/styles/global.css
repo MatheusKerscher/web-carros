@@ -2,9 +2,14 @@
 
 @theme {
   --default-font-family: "Inter", sans-serif;
+
+  --breakpoint-xsm: 20rem;
+
   --color-background-primary: #f1f5f9;
+  --color-input-border: #878787;
+
   --color-danger: #e11138;
   --color-gray: #d9d9d9;
   --color-black: #1a1a1a;
-  --color-input-border: #878787;
+  --color-green: #01974f;
 }

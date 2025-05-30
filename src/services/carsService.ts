@@ -1,6 +1,15 @@
 import { v4 as uuid } from "uuid";
-
-import type { UserProps } from "../types/User";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
 import {
   deleteObject,
   getDownloadURL,
@@ -8,20 +17,12 @@ import {
   uploadBytes,
 } from "firebase/storage";
 import { db, storage } from "../common/config/firebase";
-import type { UploadCarImageData } from "../pages/Dashboard/CarForm/types";
 import { toast } from "react-toastify";
+
+import type { UserProps } from "../types/User";
+import type { UploadCarImageData } from "../pages/Dashboard/CarForm/types";
 import type { FormData } from "../pages/Dashboard/CarForm";
-import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
-import type { CarProps } from "../types/car";
+import type { CarDetailsProps, CarProps } from "../types/car";
 
 const carsService = {
   uploadCarImage: async (
@@ -124,7 +125,7 @@ const carsService = {
   listUserCars: async (user: UserProps): Promise<CarProps[]> => {
     try {
       const carsRef = collection(db, "cars");
-      const queryRef = query(carsRef, where("uid", "==",user.uid));
+      const queryRef = query(carsRef, where("uid", "==", user.uid));
       const snapshot = await getDocs(queryRef);
       const carList: CarProps[] = snapshot.docs.map((doc) => {
         const docData = doc.data();
@@ -148,22 +149,53 @@ const carsService = {
   },
   deleteCar: async (userId: string, car: CarProps): Promise<boolean> => {
     try {
-      if(userId === car.uid) {
+      if (userId === car.uid) {
         car.images.forEach(async (image) => {
-          const imageRef = ref(storage, `images/${image.uid}/${image.name}`)
-          await deleteObject(imageRef)
-        })
+          const imageRef = ref(storage, `images/${image.uid}/${image.name}`);
+          await deleteObject(imageRef);
+        });
 
-        const docRef = doc(db, "cars", car.id)
-        await deleteDoc(docRef)
-        return true
+        const docRef = doc(db, "cars", car.id);
+        await deleteDoc(docRef);
+        return true;
       }
 
-      return false
+      return false;
     } catch {
-      return false
+      return false;
     }
-  }
+  },
+  getCarDetails: async (carId: string): Promise<CarDetailsProps | null> => {
+    try {
+      const docRef = doc(db, "cars", carId);
+      const snapshot = await getDoc(docRef);
+      const docData = snapshot.data();
+
+      console.log(docData)
+
+      if (docData) {
+        const car: CarDetailsProps = {
+          id: snapshot.id,
+          uid: docData.uid,
+          carName: docData.carName,
+          year: docData.year,
+          city: docData.city,
+          mileage: docData.mileage,
+          price: docData.price,
+          images: docData.images,
+          model: docData.model,
+          description: docData.description,
+          whatsapp: docData.whatsapp,
+        };
+
+        return car;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  },
 };
 
 export default carsService;

@@ -14,3 +14,9 @@ export interface CarProps {
   mileage: string;
   images: CarImageProps[];
 };
+
+export interface CarDetailsProps extends CarProps {
+  description: string
+  model: string
+  whatsapp: string
+}

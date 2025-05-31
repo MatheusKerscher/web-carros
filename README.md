@@ -2,7 +2,7 @@
 
 Website feito em React destinado a uma loja de carros. Você pode criar sua conta, cadastrar, editar e remover seus carros, visualizar detalhes dos sees e dos demais carros cadastrados na plataforma, além de poder acessar diretamente o WhatsApp do anunciante para falar com ele sobre o carro.
 
-![Thumbnail](/public/images/thumbnail.png)
+![Thumbnail](/thumbnail.png)
 
 ## Instalação e Uso
 

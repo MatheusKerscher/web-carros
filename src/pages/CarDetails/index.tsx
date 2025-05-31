@@ -1,14 +1,19 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation } from "swiper/modules";
 import {
   IoCalendarClearOutline,
   IoLocationOutline,
   IoSpeedometerOutline,
 } from "react-icons/io5";
 import { FaWhatsapp } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import type { CarDetailsProps } from "../../types/car";
+import { AuthContext } from "../../context/AuthContext";
+
 import carsService from "../../services/carsService";
 import brazilianCurrencyFormatter from "../../utils/brazilianCurrencyFormatter";
 import brazilianDecimalFormatter from "../../utils/brazilianDecimalFormatter";
@@ -19,25 +24,49 @@ const iconProps = {
   color: "878787",
 };
 
+import "swiper/css";
+import "swiper/css/navigation";
+
 const CarDetails = () => {
+  const { user } = useContext(AuthContext);
   const { carId } = useParams();
   const navigate = useNavigate();
   const [carDetails, setCarDetails] = useState<CarDetailsProps>();
+  const [slidesPerView, setSlidesPerView] = useState(2);
 
   useEffect(() => {
     if (carId) {
       carsService.getCarDetails(carId).then((car) => {
-        console.log(car);
         if (car) {
           setCarDetails(car);
         } else {
+          toast.warning("Carro não encontrado");
           navigate("/");
         }
       });
     } else {
+      toast.warning("Carro não encontrado");
       navigate("/");
     }
   }, [carId, navigate]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth < 640) {
+        setSlidesPerView(1);
+      } else {
+        setSlidesPerView(2);
+      }
+    };
+
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   if (!carDetails) {
     return <Spinner />;
@@ -45,7 +74,23 @@ const CarDetails = () => {
 
   return (
     <>
-      <section></section>
+      <section className="w-full rounded-lg">
+        <Swiper
+          slidesPerView={slidesPerView}
+          navigation
+          loop
+          modules={[Navigation, Autoplay]}
+        >
+          {carDetails.images.map((image) => (
+            <SwiperSlide key={image.url}>
+              <img
+                className="w-full h-96 object-cover rounded-lg sm:rounded-none"
+                src={image.url}
+              />
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
 
       <section className="mt-6 bg-white rounded-lg p-6">
         <div className="w-full flex flex-col xsm:flex-row xsm:justify-between gap-2">
@@ -96,7 +141,7 @@ const CarDetails = () => {
 
         <a
           href={`https://wa.me/${carDetails.whatsapp}?text=${encodeURIComponent(
-            `Olá! Gostaria de falar sobre o carro ${carDetails.carName}`
+            `Olá ${user?.name}! Gostaria de falar sobre o carro ${carDetails.carName} que vi no site da WebCarros`
           )}`}
           rel="noopener noreferrer"
           target="_blank"

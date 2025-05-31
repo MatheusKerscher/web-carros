@@ -13,3 +13,8 @@
   --color-black: #1a1a1a;
   --color-green: #01974f;
 }
+
+:root {
+  --swiper-navigation-color: var(--color-danger);
+  --swiper-navigation-size: 30px;
+}

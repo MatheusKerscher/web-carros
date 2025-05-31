@@ -20,7 +20,7 @@ import {
 import { db, storage } from "../common/config/firebase";
 import { toast } from "react-toastify";
 
-import type { UserProps } from "../types/User";
+import type { UserProps } from "../types/user";
 import type { CarImageData } from "../pages/Dashboard/CarForm/types";
 import type { FormData } from "../pages/Dashboard/CarForm";
 import type { CarDetailsProps, CarProps } from "../types/car";

@@ -2,7 +2,7 @@ import { createContext, useEffect, useState, type ReactNode } from "react";
 import { onAuthStateChanged } from "firebase/auth";
 
 import { auth } from "../common/config/firebase";
-import type { UserProps } from "../types/User";
+import type { UserProps } from "../types/user";
 
 type AuthContextProps = {
   signed: boolean;

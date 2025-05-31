@@ -1,54 +1,52 @@
-# React + TypeScript + Vite
+# WebCarros
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Website feito em React destinado a uma loja de carros. Você pode criar sua conta, cadastrar, editar e remover seus carros, visualizar detalhes dos sees e dos demais carros cadastrados na plataforma, além de poder acessar diretamente o WhatsApp do anunciante para falar com ele sobre o carro.
 
-Currently, two official plugins are available:
+![Thumbnail](/public/images/thumbnail.png)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Instalação e Uso
 
-## Expanding the ESLint configuration
+Esse projeto pode ser rodado localmente realizando o seguinte passo a passo:
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Criar sua conta no [Firebase](https://firebase.google.com/?hl=pt-br) e gerar seu projeto
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
+2. Criar um arquivo .env.local na raiz do projeto
+
+3. Adicionar ao arquivo a variável com o valor da chave da API do seu projeto criado no firebase
+
+```sh
+VITE_FIREBASE_API_KEY=<sua chave aqui>
+
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+4. Instalar [Node.Js](https://nodejs.org/en) e NPM
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+5. Clone esse repositório
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
+```sh
+git clone https://github.com/MatheusKerscher/web-carros.git
+
+```
+
+6. Acesse a pasta
+
+```sh
+cd portfolio
+
+```
+
+7. Instale os pacotes NPM
+
+```sh
+
+npm i
+
+```
+
+8. Executar o projeto
+
+```sh
+
+npm run dev
+
 ```

@@ -203,7 +203,7 @@ const CarForm = () => {
 
             <button
               type="button"
-              className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer z-20"
+              className="absolute inset-0 flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:transition-opacity cursor-pointer z-20"
               onClick={() => handleDeleteImage(image)}
             >
               <FiTrash size={22} color="#ffffff" />
@@ -212,7 +212,7 @@ const CarForm = () => {
             <img
               src={image.previewUrl}
               alt="Foto do carro"
-              className="w-full h-32 rounded-lg object-cover"
+              className="w-full h-52 sm:h-32 rounded-lg object-cover"
             />
           </div>
         ))}

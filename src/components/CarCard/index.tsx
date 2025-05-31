@@ -37,7 +37,7 @@ const CarCard = ({
   onDelete,
 }: CarCardProps) => {
   return (
-    <div className="relative bg-white rounded-lg max-w-[400px]">
+    <div className="relative bg-white rounded-lg w-full max-w-[400px]">
       {buttons && (
         <>
           <button

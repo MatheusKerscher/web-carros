@@ -43,7 +43,7 @@ const Header = () => {
             </button>
           </div>
         ) : (
-          <Link to="/login" className="w-full sm:w-auto flex justify-center">
+          <Link to="/login" className="flex justify-center">
             <FiLogIn {...iconProps} />
           </Link>
         )}

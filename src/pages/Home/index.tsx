@@ -25,7 +25,6 @@ const Home = () => {
       .listAllCars()
       .then((carList) => {
         if (carList) {
-          setImageCarList([]);
           setCarList(carList);
           setFilteredCarList(carList);
         }

@@ -8,6 +8,7 @@ import {
   getDocs,
   orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import {
@@ -20,61 +21,42 @@ import { db, storage } from "../common/config/firebase";
 import { toast } from "react-toastify";
 
 import type { UserProps } from "../types/User";
-import type { UploadCarImageData } from "../pages/Dashboard/CarForm/types";
+import type { CarImageData } from "../pages/Dashboard/CarForm/types";
 import type { FormData } from "../pages/Dashboard/CarForm";
 import type { CarDetailsProps, CarProps } from "../types/car";
 
+type DocCarImages = {
+  uid: string;
+  name: string;
+  url: string;
+};
+
 const carsService = {
-  uploadCarImage: async (
-    image: File,
-    user: UserProps
-  ): Promise<UploadCarImageData | null> => {
-    const currentUid = user.uid;
-    const imageUid = uuid();
-
-    const uploadRef = ref(storage, `images/${currentUid}/${imageUid}`);
-
-    try {
-      const snapshot = await uploadBytes(uploadRef, image);
-      const downloadUrl = await getDownloadURL(snapshot.ref);
-      return {
-        name: imageUid,
-        uid: currentUid,
-        previewUrl: URL.createObjectURL(image),
-        url: downloadUrl,
-      };
-    } catch {
-      toast.error(
-        "Erro ao fazer upload da imagem. Por favor, tente novamente mais tarde"
-      );
-      return null;
-    }
-  },
-  deleteCarImage: async (image: UploadCarImageData) => {
-    try {
-      const imageRef = ref(storage, `images/${image.uid}/${image.name}`);
-      await deleteObject(imageRef);
-      return true;
-    } catch {
-      toast.error(
-        "Falha ao deletar imagem. Por favor, tente novamente mais tarde"
-      );
-      return false;
-    }
-  },
   createCar: async (
     user: UserProps,
     carData: FormData,
-    imageList: UploadCarImageData[]
+    imageList: CarImageData[]
   ): Promise<boolean> => {
     try {
-      const carImages = imageList.map((image) => {
-        return {
-          uid: image.uid,
-          name: image.name,
-          url: image.url,
-        };
-      });
+      const currentUid = user.uid;
+
+      const carImageList = await Promise.all(
+        imageList.map(async (image) => {
+          if (image.file) {
+            const imageUid = uuid();
+            const uploadRef = ref(storage, `images/${currentUid}/${imageUid}`);
+
+            const snapshot = await uploadBytes(uploadRef, image.file);
+            const downloadUrl = await getDownloadURL(snapshot.ref);
+
+            return {
+              uid: currentUid,
+              name: imageUid,
+              url: downloadUrl,
+            };
+          }
+        })
+      );
 
       await addDoc(collection(db, "cars"), {
         carName: carData.carName,
@@ -88,12 +70,95 @@ const carsService = {
         created: new Date(),
         uid: user.uid,
         owner: user.name,
-        images: carImages,
+        images: carImageList,
       });
 
       return true;
     } catch {
-      toast.error("Erro ao cadastrar o carro");
+      toast.error(
+        "Erro ao cadastrar o carro. Por favor, tente novamente mais tarde"
+      );
+      return false;
+    }
+  },
+  updateCarWithImages: async (
+    user: UserProps,
+    carData: FormData,
+    imageList: CarImageData[],
+    carId: string
+  ): Promise<boolean> => {
+    try {
+      const currentUid = user.uid;
+
+      const docRef = doc(db, "cars", carId);
+      const snapshot = await getDoc(docRef);
+      const docCarImages: DocCarImages[] = snapshot.data()?.images;
+
+      if (docCarImages) {
+        const imagesToDelete: string[] = [];
+
+        docCarImages.forEach((docImage) => {
+          if (!imageList.some((i) => i.name === docImage.name)) {
+            imagesToDelete.push(docImage.name);
+          }
+        });
+
+        await Promise.all(
+          imagesToDelete.map(async (image) => {
+            const imageRef = ref(storage, `images/${currentUid}/${image}`);
+            await deleteObject(imageRef);
+          })
+        );
+
+        const carImageList: DocCarImages[] = await Promise.all(
+          imageList.map(async (image) => {
+            if (image.file) {
+              const imageUid = uuid();
+              const uploadRef = ref(
+                storage,
+                `images/${currentUid}/${imageUid}`
+              );
+
+              const snapshot = await uploadBytes(uploadRef, image.file);
+              const downloadUrl = await getDownloadURL(snapshot.ref);
+
+              return {
+                uid: currentUid,
+                name: imageUid,
+                url: downloadUrl,
+              };
+            } else {
+              return {
+                uid: currentUid,
+                name: image.uid as string,
+                url: image.previewUrl as string,
+              };
+            }
+          })
+        );
+
+        const carRef = doc(db, "cars", carId);
+
+        await updateDoc(carRef, {
+          carName: carData.carName,
+          model: carData.model,
+          year: carData.year,
+          mileage: carData.mileage,
+          price: carData.price,
+          city: carData.city,
+          whatsapp: carData.whatsapp,
+          description: carData.description,
+          images: carImageList,
+        });
+
+        return true;
+      }
+
+      return false;
+    } catch {
+      toast.error(
+        "Erro ao atualizar o carro. Por favor, tente novamente mais tarde"
+      );
       return false;
     }
   },
@@ -165,15 +230,22 @@ const carsService = {
       return false;
     }
   },
-  getCarDetails: async (carId: string): Promise<CarDetailsProps | null> => {
+  getCarDetails: async (
+    carId: string,
+    userId?: string
+  ): Promise<CarDetailsProps | null> => {
     try {
       const docRef = doc(db, "cars", carId);
       const snapshot = await getDoc(docRef);
       const docData = snapshot.data();
 
-      console.log(docData)
-
       if (docData) {
+        if (userId) {
+          if (docData.uid !== userId) {
+            return null;
+          }
+        }
+
         const car: CarDetailsProps = {
           id: snapshot.id,
           uid: docData.uid,

@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 
 import { Link } from "react-router-dom";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 
 import CarCard from "../../components/CarCard";
 import Button from "../../components/Button";
 import carsService from "../../services/carsService";
+import Spinner from "../../components/Spinner";
+
 import type { CarProps } from "../../types/car";
 
 const Home = () => {
@@ -35,15 +35,7 @@ const Home = () => {
   return (
     <div className="pb-8">
       {loading && (
-        <Spin
-          fullscreen
-          indicator={
-            <LoadingOutlined
-              spin
-              style={{ fontSize: "52px", color: "#e11138" }}
-            />
-          }
-        />
+        <Spinner />
       )}
 
       <section className="bg-white w-full max-w-6xl mx-auto flex flex-col sm:flex-row justify-center gap-4 px-4 py-5 mb-12 rounded-lg">

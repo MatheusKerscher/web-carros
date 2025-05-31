@@ -1,6 +1,6 @@
-export interface UploadCarImageData {
-  name: string;
-  uid: string;
+export interface CarImageData {
+  file: File | null
   previewUrl: string;
-  url: string;
+  uid?: string;
+  name?: string;
 };

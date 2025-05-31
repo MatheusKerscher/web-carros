@@ -1,4 +1,10 @@
-import { useContext, useRef, useState, type ChangeEvent } from "react";
+import {
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ChangeEvent,
+} from "react";
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,7 +16,9 @@ import Button from "../../../components/Button";
 import InputField from "../../../components/InputField";
 import { AuthContext } from "../../../context/AuthContext";
 import carsService from "../../../services/carsService";
-import type { UploadCarImageData } from "./types";
+import type { CarImageData } from "./types";
+import { useNavigate, useParams } from "react-router-dom";
+import Spinner from "../../../components/Spinner";
 
 const schema = z.object({
   carName: z
@@ -44,8 +52,11 @@ export type FormData = z.infer<typeof schema>;
 
 const CarForm = () => {
   const { user } = useContext(AuthContext);
+  const { carId } = useParams();
+  const navigate = useNavigate();
+
   const inputImageRef = useRef<HTMLInputElement>(null);
-  const [carImages, setCarImages] = useState<UploadCarImageData[]>([]);
+  const [carImages, setCarImages] = useState<CarImageData[]>([]);
   const [loading, setLoading] = useState(false);
 
   const {
@@ -58,41 +69,87 @@ const CarForm = () => {
     mode: "onChange",
   });
 
+  useEffect(() => {
+    if (carId) {
+      setLoading(true);
+
+      carsService
+        .getCarDetails(carId, user?.uid)
+        .then((carData) => {
+          if (carData) {
+            reset({
+              carName: carData.carName,
+              model: carData.model,
+              year: carData.year,
+              mileage: carData.mileage,
+              price: carData.price,
+              city: carData.city,
+              whatsapp: carData.whatsapp,
+              description: carData.description,
+            });
+
+            setCarImages(
+              carData.images.map((i) => ({
+                name: i.name,
+                uid: i.uid,
+                previewUrl: i.url,
+                file: null,
+              }))
+            );
+          } else {
+            toast.error(
+              "Não foi possível encontrar o carro. Por favor, tente novamente mais tarde"
+            );
+            navigate("/dashboard");
+          }
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      reset({
+        carName: "",
+        model: "",
+        year: "",
+        mileage: "",
+        price: undefined,
+        city: "",
+        whatsapp: "",
+        description: "",
+      });
+      setCarImages([])
+    }
+  }, [carId, user, navigate, reset]);
+
   const handleFile = (ev: ChangeEvent<HTMLInputElement>) => {
+    if (!user?.uid) {
+      return;
+    }
+
     if (ev.target.files && ev.target.files[0]) {
       const image = ev.target.files[0];
 
       if (image.type === "image/jpeg" || image.type === "image/png") {
-        handleUploadImage(image);
+        setCarImages((images) => [
+          ...images,
+          {
+            file: image,
+            previewUrl: URL.createObjectURL(image),
+          },
+        ]);
       } else {
         toast.warning("Por favor, envie somente imagens do tipo jpeg ou png");
       }
     }
   };
 
-  const handleUploadImage = (image: File) => {
-    if (!user?.uid) {
-      return;
-    }
-
-    carsService.uploadCarImage(image, user).then((response) => {
-      if (response) {
-        setCarImages((images) => [...images, response]);
-      }
-    });
+  const handleDeleteImage = (image: CarImageData) => {
+    setCarImages(
+      carImages.filter((carImage) => carImage.previewUrl !== image.previewUrl)
+    );
   };
 
-  const handleDeleteImage = (image: UploadCarImageData) => {
-    carsService.deleteCarImage(image).then((success) => {
-      if (success) {
-        setCarImages(
-          carImages.filter((carImage) => carImage.url !== image.url)
-        );
-      }
-    });
-  };
-
-  const saveCar = (data: FormData) => {
+  const saveCar = async (data: FormData) => {
     if (!user?.uid) {
       return;
     }
@@ -104,20 +161,23 @@ const CarForm = () => {
 
     setLoading(true);
 
-    carsService
-      .createCar(user, data, carImages)
-      .then(() => {
-        reset();
-        setCarImages([]);
-        toast.success("Carro cadastrado com sucesso");
-      })
-      .finally(() => {
-        setLoading(false);
-      });
+    const success = carId
+      ? await carsService.updateCarWithImages(user, data, carImages, carId)
+      : await carsService.createCar(user, data, carImages);
+
+    if (success) {
+      reset();
+      setCarImages([]);
+      toast.success("Carro salvo com sucesso");
+    }
+
+    setLoading(false);
   };
 
   return (
     <div>
+      {loading && <Spinner />}
+
       <section className="w-full rounded-lg bg-white p-4 mt-8 flex flex-col sm:flex-row items-center gap-2">
         <button
           className="border-1 border-input-border rounded-lg w-48 h-32 flex justify-center items-center cursor-pointer"
@@ -138,7 +198,7 @@ const CarForm = () => {
         </button>
 
         {carImages.map((image) => (
-          <div key={image.name} className="relative group">
+          <div key={image.previewUrl} className="relative group">
             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg z-10" />
 
             <button
@@ -257,9 +317,8 @@ const CarForm = () => {
               isValid ? "cursor-pointer" : "opacity-70 cursor-not-allowed"
             }`}
             disabled={!isValid}
-            loading={loading}
           >
-            Cadastrar
+            {carId ? "Atualizar" : "Cadastrar"}
           </Button>
         </form>
       </section>

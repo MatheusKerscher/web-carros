@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 
 import { useNavigate, useParams } from "react-router-dom";
-import { LoadingOutlined } from "@ant-design/icons";
-import { Spin } from "antd";
 import {
   IoCalendarClearOutline,
   IoLocationOutline,
@@ -14,6 +12,7 @@ import type { CarDetailsProps } from "../../types/car";
 import carsService from "../../services/carsService";
 import brazilianCurrencyFormatter from "../../utils/brazilianCurrencyFormatter";
 import brazilianDecimalFormatter from "../../utils/brazilianDecimalFormatter";
+import Spinner from "../../components/Spinner";
 
 const iconProps = {
   size: 14,
@@ -41,17 +40,7 @@ const CarDetails = () => {
   }, [carId, navigate]);
 
   if (!carDetails) {
-    return (
-      <Spin
-        fullscreen
-        indicator={
-          <LoadingOutlined
-            spin
-            style={{ fontSize: "52px", color: "#e11138" }}
-          />
-        }
-      />
-    );
+    return <Spinner />;
   }
 
   return (

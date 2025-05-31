@@ -9,6 +9,7 @@ type ButtonProps = {
   children: ReactNode;
   disabled?: boolean;
   loading?: boolean;
+  handleClick ?: () => void
 };
 
 const Button = ({
@@ -16,13 +17,15 @@ const Button = ({
   type,
   classStyle = "bg-black",
   disabled,
-  loading = false
+  loading = false,
+  handleClick
 }: ButtonProps) => {
   return (
     <button
       type={type}
       className={`text-white rounded-lg text-center font-bold md:text-lg py-2 transition-all ${classStyle}`}
       disabled={disabled}
+      onClick={handleClick}
     >
       {
         loading 

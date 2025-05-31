@@ -31,7 +31,7 @@ git clone https://github.com/MatheusKerscher/web-carros.git
 6. Acesse a pasta
 
 ```sh
-cd portfolio
+cd web-carros
 
 ```
 
